@@ -58,12 +58,12 @@ public class StockKeyMainTest {
 		StockKey[] stockKeyTab = new StockKey[NB_STOCK_KEY];
 		for(int i=0;i<NB_STOCK_KEY;i++) {
 			if(i==0) {
-				stockKeyTab[i] = new StockKey("FR01223456","EUR","474");
+				stockKeyTab[i] = new StockKey("IT01223456","EUR","474");
 			}else if(i==NB_STOCK_KEY-1) {
-				stockKeyTab[i] = new StockKey("FR01223456","EUR","474");
+				stockKeyTab[i] = new StockKey("GB01223456","EUR","474");
 			}else {
 				//stockKeyTab[i]=new StockKey("FR6543210","EUR","474");
-				stockKeyTab[i]=buildStockKey();
+				stockKeyTab[i]=stockKey1;
 			}
 		}
 		StopWatch stopWatch = new StopWatch("start.....");

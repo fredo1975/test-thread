@@ -5,13 +5,15 @@ import java.util.concurrent.BlockingQueue;
 public class Consumer implements Runnable {
 	protected BlockingQueue<String> queue = null;
 
-    public Consumer(BlockingQueue<String> queue) {
+	private int limite=0;
+    public Consumer(BlockingQueue<String> queue,int limite) {
         this.queue = queue;
+        this.limite=limite;
     }
 	@Override
 	public void run() {
 		try {
-			for(int i=0;i<1024;i++){
+			for(int i=0;i<limite;i++){
 				//Thread.sleep(1000);
 				System.out.println("consuming : "+queue.take());
 			}

@@ -3,8 +3,6 @@ package fr.bluechipit.thread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 public class Consommateur extends Thread {
 	protected static final Logger logger = LoggerFactory.getLogger(Consommateur.class);
 	MoniteurProdCons tampon;

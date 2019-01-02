@@ -12,9 +12,9 @@ public class BlockingQueueExample {
 		logger.info("BlockingQueueExample start");
 		long startTime = System.currentTimeMillis();
 		BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
-
-        Producer producer = new Producer(queue);
-        Consumer consumer = new Consumer(queue);
+		int limite=10;
+        Producer producer = new Producer(queue,limite);
+        Consumer consumer = new Consumer(queue,limite);
 
         Thread t1 = new Thread(producer);
         t1.start();

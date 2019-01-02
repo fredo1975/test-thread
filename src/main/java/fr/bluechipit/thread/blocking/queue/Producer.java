@@ -4,13 +4,15 @@ import java.util.concurrent.BlockingQueue;
 
 public class Producer implements Runnable {
 	protected BlockingQueue<String> queue = null;
-	public Producer(BlockingQueue<String> queue) {
+	private int limite=0;
+	public Producer(BlockingQueue<String> queue,int limite) {
         this.queue = queue;
+        this.limite=limite;
     }
 	@Override
 	public void run() {
 		try {
-			for(int i=0;i<1024;i++){
+			for(int i=0;i<limite;i++){
 				System.out.println("producing : "+i);
 				queue.put(String.valueOf(i));
 				//Thread.sleep(1000);

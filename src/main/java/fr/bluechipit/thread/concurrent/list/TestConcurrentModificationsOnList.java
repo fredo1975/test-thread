@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TestConcurrentModificationsOnList {
-
-	public static final int NB_THREADS = 2;
+	final static int limit = 100;
+	public static final int NB_THREADS =1000;
 	static class MonThread1 extends Thread{
 		private final List<Integer> list;
 		public MonThread1(List<Integer> ll) {
@@ -20,15 +20,15 @@ public class TestConcurrentModificationsOnList {
 		@Override
 		public void run() {
 			//System.out.println("MonThread1 "+this.getName()+" start");
-			for(int i=0;i<6;i++){
+			for(int i=0;i<limit;i++){
 				list.add(i);
 				if(i%2==0 && i!=0){
 					list.remove(1);
 				}
 			}
 			for (Iterator<Integer> it = list.iterator(); it.hasNext();) {
-				System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
-				//it.next();
+				//System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
+				it.next();
 			}
 			//System.out.println("MonThread1 "+this.getName()+" end");
 		}
@@ -42,16 +42,17 @@ public class TestConcurrentModificationsOnList {
 		@Override
 		public void run() {
 			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
-			for(int i=0;i<6;i++){
+			for(int i=0;i<limit;i++){
 				list.add(i);
 				if(i%2==0 && i!=0){
 					list.remove(1);
 				}
 			}
+			
 			synchronized(list){
 				for(Iterator<Integer> it = list.iterator();it.hasNext();){
-					System.out.println(this.getName()+" MonThreadSynchronized - it.next()="+it.next());
-					
+					//System.out.println(this.getName()+" MonThreadSynchronized - it.next()="+it.next());
+					it.next();
 				}
 			}
 			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
@@ -73,7 +74,7 @@ public class TestConcurrentModificationsOnList {
 		}
 		long end = System.currentTimeMillis();
 		NumberFormat formatter = new DecimalFormat("#0.00000");
-		System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("CopyOnWriteArrayList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
 		
 		start = System.currentTimeMillis();
 		MonThreadSynchronized[] threads2 = new MonThreadSynchronized[NB_THREADS];
@@ -90,7 +91,7 @@ public class TestConcurrentModificationsOnList {
 		System.out.println("thread3.isAlive()="+thread3.isAlive());
 		System.out.println("thread4.isAlive()="+thread4.isAlive());*/
 		end = System.currentTimeMillis();
-		System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("Collections.synchronizedList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
 		/*for(Integer integer : ll){
 			System.out.println("integer="+integer);
 		}*/

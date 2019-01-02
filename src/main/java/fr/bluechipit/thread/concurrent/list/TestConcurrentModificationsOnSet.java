@@ -10,7 +10,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class TestConcurrentModificationsOnSet {
-	public static final int NB_THREADS = 5;
+	public static final int NB_THREADS = 1000;
+	final static int limit = 1000;
 	static class MonThread1 extends Thread{
 		private final Set<Integer> set;
 		public MonThread1(Set<Integer> set) {
@@ -20,15 +21,15 @@ public class TestConcurrentModificationsOnSet {
 		@Override
 		public void run() {
 			//System.out.println("MonThread1 "+this.getName()+" start");
-			for(int i=0;i<6;i++){
+			for(int i=0;i<limit;i++){
 				set.add(i);
 				if(i%2==0 && i!=0){
 					set.remove(1);
 				}
 			}
 			for (Iterator<Integer> it = set.iterator(); it.hasNext();) {
-				System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
-				//it.next();
+				//System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
+				it.next();
 			}
 			//System.out.println("MonThread1 "+this.getName()+" end");
 		}
@@ -42,7 +43,7 @@ public class TestConcurrentModificationsOnSet {
 		@Override
 		public void run() {
 			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
-			for(int i=0;i<6;i++){
+			for(int i=0;i<limit;i++){
 				set.add(i);
 				if(i%2==0 && i!=0){
 					set.remove(1);
@@ -50,8 +51,8 @@ public class TestConcurrentModificationsOnSet {
 			}
 			synchronized(set){
 				for(Iterator<Integer> it = set.iterator();it.hasNext();){
-					System.out.println(this.getName()+" MonThreadSynchronized - it.next()="+it.next());
-					
+					//System.out.println(this.getName()+" MonThreadSynchronized - it.next()="+it.next());
+					it.next();
 				}
 			}
 			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
@@ -65,7 +66,7 @@ public class TestConcurrentModificationsOnSet {
 		@Override
 		public void run() {
 			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
-			for(int i=0;i<6;i++){
+			for(int i=0;i<limit;i++){
 				set.add(i);
 				if(i%2==0 && i!=0){
 					set.remove(1);
@@ -73,8 +74,8 @@ public class TestConcurrentModificationsOnSet {
 			}
 			//synchronized(set){
 				for(Iterator<Integer> it = set.iterator();it.hasNext();){
-					System.out.println(this.getName()+" MonThreadConcurrent - it.next()="+it.next());
-					
+					//System.out.println(this.getName()+" MonThreadConcurrent - it.next()="+it.next());
+					it.next();
 				}
 			//}
 			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
@@ -84,6 +85,7 @@ public class TestConcurrentModificationsOnSet {
 		Set<Integer> synchronizedSet = Collections.synchronizedSet(new HashSet<>());
 		Set<Integer> set = new CopyOnWriteArraySet<>();
 		Set<Integer> concurrentSet = new ConcurrentSkipListSet<>();
+		
 		long start = System.currentTimeMillis();
 		MonThread1[] threads = new MonThread1[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
@@ -95,7 +97,7 @@ public class TestConcurrentModificationsOnSet {
 		}
 		long end = System.currentTimeMillis();
 		NumberFormat formatter = new DecimalFormat("#0.00000");
-		System.out.print("Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("CopyOnWriteArraySet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
 		
 		start = System.currentTimeMillis();
 		MonThreadSynchronized[] threads2 = new MonThreadSynchronized[NB_THREADS];
@@ -106,6 +108,8 @@ public class TestConcurrentModificationsOnSet {
 		for(int i=0;i<NB_THREADS;i++){
 			threads2[i].join();
 		}
+		end = System.currentTimeMillis();
+		System.out.println("Collections.synchronizedSet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
 		
 		MonThreadConcurrent[] threads3 = new MonThreadConcurrent[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
@@ -115,6 +119,9 @@ public class TestConcurrentModificationsOnSet {
 		for(int i=0;i<NB_THREADS;i++){
 			threads3[i].join();
 		}
+		end = System.currentTimeMillis();
+		System.out.println("ConcurrentSkipListSet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		
 	}
 
 }
