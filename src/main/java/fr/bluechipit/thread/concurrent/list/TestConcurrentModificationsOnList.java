@@ -8,93 +8,151 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang.math.RandomUtils;
+
 public class TestConcurrentModificationsOnList {
-	final static int limit = 100;
-	public static final int NB_THREADS =1000;
-	static class MonThread1 extends Thread{
+	final static int limit = 1000;
+	public static final int NB_THREADS=10;
+	class MonThreadWithCopyOnWriteArrayList extends Thread{
 		private final List<Integer> list;
-		public MonThread1(List<Integer> ll) {
+		public MonThreadWithCopyOnWriteArrayList(List<Integer> ll) {
 			list = ll;
 		}
-
 		@Override
 		public void run() {
-			//System.out.println("MonThread1 "+this.getName()+" start");
 			for(int i=0;i<limit;i++){
-				list.add(i);
+				list.add(RandomUtils.nextInt());
+				/*
 				if(i%2==0 && i!=0){
 					list.remove(1);
-				}
+				}*/
 			}
 			for (Iterator<Integer> it = list.iterator(); it.hasNext();) {
-				//System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
 				it.next();
 			}
-			//System.out.println("MonThread1 "+this.getName()+" end");
 		}
 	}
-	
-	static class MonThreadSynchronized extends Thread{
+	class MonThreadWithCopyOnWriteArrayListAlreadyFullFilled extends Thread{
 		private final List<Integer> list;
-		public MonThreadSynchronized(List<Integer> ll) {
+		public MonThreadWithCopyOnWriteArrayListAlreadyFullFilled(List<Integer> ll) {
 			list = ll;
 		}
 		@Override
 		public void run() {
-			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
+			for (Iterator<Integer> it = list.iterator(); it.hasNext();) {
+				it.next();
+			}
+		}
+	}
+	class MonThreadWithSynchronizedList extends Thread{
+		private final List<Integer> list;
+		public MonThreadWithSynchronizedList(List<Integer> ll) {
+			list = ll;
+		}
+		@Override
+		public void run() {
+			//System.out.println("MonThreadWithSynchronizedList "+this.getName()+" start");
 			for(int i=0;i<limit;i++){
-				list.add(i);
+				list.add(RandomUtils.nextInt());
+				/*
 				if(i%2==0 && i!=0){
 					list.remove(1);
-				}
+				}*/
 			}
-			
 			synchronized(list){
 				for(Iterator<Integer> it = list.iterator();it.hasNext();){
-					//System.out.println(this.getName()+" MonThreadSynchronized - it.next()="+it.next());
 					it.next();
 				}
 			}
-			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
+			//System.out.println("MonThreadWithSynchronizedList "+this.getName()+" end");
 		}
 	}
-	
+	class MonThreadWithSynchronizedListAlreadyFullFilled extends Thread{
+		private final List<Integer> list;
+		public MonThreadWithSynchronizedListAlreadyFullFilled(List<Integer> ll) {
+			list = ll;
+		}
+		@Override
+		public void run() {
+			//System.out.println("MonThreadWithSynchronizedList "+this.getName()+" start");
+			synchronized(list){
+				for(Iterator<Integer> it = list.iterator();it.hasNext();){
+					it.next();
+				}
+			}
+			//System.out.println("MonThreadWithSynchronizedList "+this.getName()+" end");
+		}
+	}
 	public static void main(String[] args) throws InterruptedException {
+		TestConcurrentModificationsOnList testConcurrentModificationsOnList = new TestConcurrentModificationsOnList();
 		List<Integer> synchronizedList = Collections.synchronizedList(new ArrayList<Integer>());
-		List<Integer> ll = new CopyOnWriteArrayList<Integer>();
-		
+		//List<Integer> synchronizedList = new ArrayList<Integer>();
+		List<Integer> copyOnWriteArrayList = new CopyOnWriteArrayList<Integer>();
+		NumberFormat formatter = new DecimalFormat("#0.00000");
+		/*******************************************************************************************************************************/
 		long start = System.currentTimeMillis();
-		MonThread1[] threads = new MonThread1[NB_THREADS];
+		MonThreadWithCopyOnWriteArrayList[] threads = new MonThreadWithCopyOnWriteArrayList[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
-			threads[i] = new MonThread1(ll);
+			threads[i] = testConcurrentModificationsOnList.new MonThreadWithCopyOnWriteArrayList(copyOnWriteArrayList);
 			threads[i].start();
 		}
 		for(int i=0;i<NB_THREADS;i++){
 			threads[i].join();
 		}
 		long end = System.currentTimeMillis();
-		NumberFormat formatter = new DecimalFormat("#0.00000");
-		System.out.println("CopyOnWriteArrayList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("MonThreadWithCopyOnWriteArrayList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
 		
+		/*******************************************************************************************************************************/
 		start = System.currentTimeMillis();
-		MonThreadSynchronized[] threads2 = new MonThreadSynchronized[NB_THREADS];
+		MonThreadWithSynchronizedList[] threads2 = new MonThreadWithSynchronizedList[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
-			threads2[i] = new MonThreadSynchronized(synchronizedList);
+			threads2[i] = testConcurrentModificationsOnList.new MonThreadWithSynchronizedList(synchronizedList);
 			threads2[i].start();
 		}
 		for(int i=0;i<NB_THREADS;i++){
 			threads2[i].join();
 		}
-		/*
-		System.out.println("thread1.isAlive()="+thread1.isAlive());
-		System.out.println("thread2.isAlive()="+thread2.isAlive());
-		System.out.println("thread3.isAlive()="+thread3.isAlive());
-		System.out.println("thread4.isAlive()="+thread4.isAlive());*/
 		end = System.currentTimeMillis();
-		System.out.println("Collections.synchronizedList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
-		/*for(Integer integer : ll){
-			System.out.println("integer="+integer);
-		}*/
+		System.out.println("MonThreadWithSynchronizedList - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
+		
+		/*******************************************************************************************************************************/
+		copyOnWriteArrayList.clear();
+		for(int i=0;i<limit;i++){
+			copyOnWriteArrayList.add(RandomUtils.nextInt());
+		}
+		start = System.currentTimeMillis();
+		MonThreadWithCopyOnWriteArrayListAlreadyFullFilled[] monThreadWithCopyOnWriteArrayListAlreadyFullFilled = new MonThreadWithCopyOnWriteArrayListAlreadyFullFilled[NB_THREADS];
+		for(int i=0;i<NB_THREADS;i++){
+			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i] = testConcurrentModificationsOnList.new MonThreadWithCopyOnWriteArrayListAlreadyFullFilled(copyOnWriteArrayList);
+			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i].start();
+		}
+		for(int i=0;i<NB_THREADS;i++){
+			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i].join();
+		}
+		end = System.currentTimeMillis();
+		
+		System.out.println("MonThreadWithCopyOnWriteArrayListAlreadyFullFilled - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
+		
+		
+		/*******************************************************************************************************************************/
+		synchronizedList.clear();
+		for(int i=0;i<limit;i++){
+			synchronizedList.add(RandomUtils.nextInt());
+		}
+		start = System.currentTimeMillis();
+		MonThreadWithSynchronizedListAlreadyFullFilled[] monThreadWithSynchronizedListAlreadyFullFilled = new MonThreadWithSynchronizedListAlreadyFullFilled[NB_THREADS];
+		for(int i=0;i<NB_THREADS;i++){
+			monThreadWithSynchronizedListAlreadyFullFilled[i] = testConcurrentModificationsOnList.new MonThreadWithSynchronizedListAlreadyFullFilled(synchronizedList);
+			monThreadWithSynchronizedListAlreadyFullFilled[i].start();
+		}
+		for(int i=0;i<NB_THREADS;i++){
+			monThreadWithSynchronizedListAlreadyFullFilled[i].join();
+		}
+		end = System.currentTimeMillis();
+		System.out.println("MonThreadWithSynchronizedListAlreadyFullFilled - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		
 	}
-
 }

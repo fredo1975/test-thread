@@ -10,17 +10,19 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class TestConcurrentModificationsOnSet {
-	public static final int NB_THREADS = 1000;
-	final static int limit = 1000;
-	static class MonThread1 extends Thread{
+	public static final int NB_THREADS = 10;
+	final static int limit = 10000;
+	final static NumberFormat formatter = new DecimalFormat("#0.00000");
+	class MonThreadWithCopyOnWriteArraySet extends Thread{
 		private final Set<Integer> set;
-		public MonThread1(Set<Integer> set) {
+		public MonThreadWithCopyOnWriteArraySet(Set<Integer> set) {
 			this.set = set;
 		}
 
 		@Override
 		public void run() {
-			//System.out.println("MonThread1 "+this.getName()+" start");
+			long start = System.currentTimeMillis();
+			//System.out.println("MonThreadWithCopyOnWriteArraySet "+this.getName()+" start");
 			for(int i=0;i<limit;i++){
 				set.add(i);
 				if(i%2==0 && i!=0){
@@ -31,18 +33,20 @@ public class TestConcurrentModificationsOnSet {
 				//System.out.println(this.getName()+" MonThread1 - it.next()="+it.next());
 				it.next();
 			}
-			//System.out.println("MonThread1 "+this.getName()+" end");
+			long end = System.currentTimeMillis();
+			System.out.println("MonThreadWithCopyOnWriteArraySet "+this.getName()+" end Execution time is "+ formatter.format((end - start) / 1000d) + " seconds");
 		}
 	}
 	
-	static class MonThreadSynchronized extends Thread{
+	class MonThreadWithSynchronizedSet extends Thread{
 		private final Set<Integer> set;
-		public MonThreadSynchronized(Set<Integer> set) {
+		public MonThreadWithSynchronizedSet(Set<Integer> set) {
 			this.set = set;
 		}
 		@Override
 		public void run() {
-			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
+			long start = System.currentTimeMillis();
+			//System.out.println("MonThreadWithSynchronizedSet "+this.getName()+" start");
 			for(int i=0;i<limit;i++){
 				set.add(i);
 				if(i%2==0 && i!=0){
@@ -55,16 +59,18 @@ public class TestConcurrentModificationsOnSet {
 					it.next();
 				}
 			}
-			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
+			long end = System.currentTimeMillis();
+			System.out.println("MonThreadWithSynchronizedSet "+this.getName()+" end Execution time is "+ formatter.format((end - start) / 1000d) + " seconds");
 		}
 	}
-	static class MonThreadConcurrent extends Thread{
+	class MonThreadConcurrent extends Thread{
 		private final Set<Integer> set;
 		public MonThreadConcurrent(Set<Integer> set) {
 			this.set = set;
 		}
 		@Override
 		public void run() {
+			long start = System.currentTimeMillis();
 			//System.out.println("MonThreadSynchronized "+this.getName()+" start");
 			for(int i=0;i<limit;i++){
 				set.add(i);
@@ -78,50 +84,58 @@ public class TestConcurrentModificationsOnSet {
 					it.next();
 				}
 			//}
-			//System.out.println("MonThreadSynchronized "+this.getName()+" end");
+				long end = System.currentTimeMillis();
+				System.out.println("MonThreadConcurrent "+this.getName()+" end Execution time is "+ formatter.format((end - start) / 1000d) + " seconds");
 		}
 	}
 	public static void main(String[] args) throws InterruptedException {
+		TestConcurrentModificationsOnSet testConcurrentModificationsOnSet = new TestConcurrentModificationsOnSet();
 		Set<Integer> synchronizedSet = Collections.synchronizedSet(new HashSet<>());
 		Set<Integer> set = new CopyOnWriteArraySet<>();
 		Set<Integer> concurrentSet = new ConcurrentSkipListSet<>();
 		
+		/*******************************************************************************************************************************/
 		long start = System.currentTimeMillis();
-		MonThread1[] threads = new MonThread1[NB_THREADS];
+		MonThreadWithCopyOnWriteArraySet[] threads = new MonThreadWithCopyOnWriteArraySet[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
-			threads[i] = new MonThread1(set);
+			threads[i] = testConcurrentModificationsOnSet.new MonThreadWithCopyOnWriteArraySet(set);
 			threads[i].start();
 		}
 		for(int i=0;i<NB_THREADS;i++){
 			threads[i].join();
 		}
+		System.out.println("MonThreadWithCopyOnWriteArraySet set.size()="+set.size());
 		long end = System.currentTimeMillis();
-		NumberFormat formatter = new DecimalFormat("#0.00000");
-		System.out.println("CopyOnWriteArraySet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("MonThreadWithCopyOnWriteArraySet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
 		
+		/*******************************************************************************************************************************/
 		start = System.currentTimeMillis();
-		MonThreadSynchronized[] threads2 = new MonThreadSynchronized[NB_THREADS];
+		MonThreadWithSynchronizedSet[] threads2 = new MonThreadWithSynchronizedSet[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
-			threads2[i] = new MonThreadSynchronized(synchronizedSet);
+			threads2[i] = testConcurrentModificationsOnSet.new MonThreadWithSynchronizedSet(synchronizedSet);
 			threads2[i].start();
 		}
 		for(int i=0;i<NB_THREADS;i++){
 			threads2[i].join();
 		}
+		System.out.println("MonThreadWithSynchronizedSet synchronizedSet.size()="+synchronizedSet.size());
 		end = System.currentTimeMillis();
-		System.out.println("Collections.synchronizedSet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		System.out.println("MonThreadWithSynchronizedSet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
 		
+		/*******************************************************************************************************************************/
 		MonThreadConcurrent[] threads3 = new MonThreadConcurrent[NB_THREADS];
 		for(int i=0;i<NB_THREADS;i++){
-			threads3[i] = new MonThreadConcurrent(concurrentSet);
+			threads3[i] = testConcurrentModificationsOnSet.new MonThreadConcurrent(concurrentSet);
 			threads3[i].start();
 		}
 		for(int i=0;i<NB_THREADS;i++){
 			threads3[i].join();
 		}
+		System.out.println("MonThreadConcurrent concurrentSet.size()="+concurrentSet.size());
 		end = System.currentTimeMillis();
-		System.out.println("ConcurrentSkipListSet - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
-		
+		System.out.println("MonThreadConcurrent - Execution time is " + formatter.format((end - start) / 1000d) + " seconds");
+		/*******************************************************************************************************************************/
 	}
-
 }

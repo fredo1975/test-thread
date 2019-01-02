@@ -23,8 +23,6 @@ public class BlockingQueueExample {
 
         t1.join();
         t2.join();
-        System.out.println("Integer.MAX_VALUE="+Integer.MAX_VALUE);
-        //Thread.sleep(4000);
         long endTime = System.currentTimeMillis() - startTime;
 		
 		logger.info("BlockingQueueExample end in "+endTime);
