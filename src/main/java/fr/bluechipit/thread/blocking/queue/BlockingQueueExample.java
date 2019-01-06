@@ -25,7 +25,7 @@ public class BlockingQueueExample {
         t2.join();
         long endTime = System.currentTimeMillis() - startTime;
 		
-		logger.info("BlockingQueueExample end in "+endTime);
+		logger.info("BlockingQueueExample end in "+endTime+" ms");
 	}
 
 }

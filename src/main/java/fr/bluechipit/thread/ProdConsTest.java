@@ -18,7 +18,7 @@ public class ProdConsTest {
 		cons.join();
 		long endTime = System.currentTimeMillis() - startTime;
 		
-		logger.info("ProdConsTest end in "+endTime);
+		logger.info("ProdConsTest end in "+endTime+" ms");
 	}
 
 }
