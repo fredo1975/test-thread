@@ -10,9 +10,7 @@ public class SalleDeBain {
 	protected static final Logger logger = LoggerFactory.getLogger(SalleDeBain.class);
 	private static final int NB_MAX_PERSONNE_DANS_LA_SALLE_DE_BAIN = 3;
 	private int nbPersonnesDansLaSalleDeBain = 0;
-	private Genre genreEnCours = null;
-	Map<Genre,String> map = new HashMap<>();
-
+	
 	public void entrer(Genre genre,String nom) throws InterruptedException {
 		logger.info(nom+ " veut entrer - genre:"+genre.name());
 		synchronized (this) {
