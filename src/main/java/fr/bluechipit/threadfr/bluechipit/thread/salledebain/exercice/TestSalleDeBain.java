@@ -10,9 +10,13 @@ import org.slf4j.LoggerFactory;
 
 public class TestSalleDeBain implements Runnable{
 	protected static final Logger logger = LoggerFactory.getLogger(TestSalleDeBain.class);
-	private static final int NB_THREDS = 200;
-	private static final int NB_PERSONNE_DANS_LA_SALLE_DEBAIN=3;
+	private static final int NB_THREDS = 100;
 	
+	/**
+	 * Exercice : un nombre max de personnes peuvent entrer dans une salle de bain
+	 * et seul des personnes du même sex peuvent entrer
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		SalleDeBain sdb = new SalleDeBain();
 		ExecutorService executor = Executors.newFixedThreadPool(NB_THREDS);

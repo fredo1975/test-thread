@@ -5,24 +5,27 @@ import org.slf4j.LoggerFactory;
 
 public class SalleDeBain {
 	protected static final Logger logger = LoggerFactory.getLogger(SalleDeBain.class);
-	private static final int NB_MAX_PERSONNE_DANS_LA_SALLE_DE_BAIN = 3;
-	private int nbPersonnesDansLaSalleDeBain = 0;
-	
+	private ConditionDentree cd;
+	public SalleDeBain() {
+		super();
+		cd = new ConditionDentree(0,Genre.UNKWOWN);
+	}
+
 	public void entrer(Genre genre,String nom) throws InterruptedException {
 		logger.info(nom+ " veut entrer - genre:"+genre.name());
 		synchronized (this) {
-			while(nbPersonnesDansLaSalleDeBain>=3) {
+			while(cd.conditionNbPersonnes() || cd.conditionGenre(genre)) {
 				wait();
 			}
-			nbPersonnesDansLaSalleDeBain++;
-			logger.info(nom+ " est entrée - genre:"+genre.name()+" "+nbPersonnesDansLaSalleDeBain+" dans la salle de bain");
+			cd.entreeCondition(genre);
+			logger.info(nom+ " est entrée - genre:"+genre.name()+" "+cd.getNbPersonnesDansLaSalleDeBain()+" dans la salle de bain");
 		}
 	}
 
 	public void sortir(Genre genre,String nom) {
 		synchronized (this) {
-			nbPersonnesDansLaSalleDeBain--;
-			logger.info(nom+ " est sortie - genre:"+genre.name()+" "+nbPersonnesDansLaSalleDeBain+" dans la salle de bain");
+			cd.sortieCondition(genre);
+			logger.info(nom+ " est sortie - genre:"+genre.name()+" "+cd.getNbPersonnesDansLaSalleDeBain()+" dans la salle de bain");
 			notifyAll();
 		}
 	}
