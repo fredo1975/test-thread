@@ -10,7 +10,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 1000; i++) {
 			System.out.println("i="+i+" --");
 			Long l = 100000000L;
 			Runnable worker = new MyRunnable(l + i);
