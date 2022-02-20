@@ -8,7 +8,10 @@ public class TestVolatileInSingletonContext {
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i = 0; i < 5; i++) {
-			Runnable worker = new MonThread1();
+			Runnable worker = (()->{
+				Singleton instance = Singleton.getInstance();
+				System.out.println(instance);
+			});
 			executor.execute(worker);
 		}
 		// This will make the executor accept no new threads

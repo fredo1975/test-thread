@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class TestSalleDeBain implements Runnable{
 	protected static final Logger logger = LoggerFactory.getLogger(TestSalleDeBain.class);
-	private static final int NB_THREDS = 100;
+	private static final int NB_THREDS = 10;
 	
 	/**
 	 * Exercice : un nombre max de personnes peuvent entrer dans une salle de bain

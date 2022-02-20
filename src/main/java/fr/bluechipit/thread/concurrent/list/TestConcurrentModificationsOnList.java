@@ -95,8 +95,6 @@ public class TestConcurrentModificationsOnList {
 		for(int i=0;i<NB_THREADS;i++){
 			threads[i] = testConcurrentModificationsOnList.new MonThreadWithCopyOnWriteArrayList(copyOnWriteArrayList);
 			threads[i].start();
-		}
-		for(int i=0;i<NB_THREADS;i++){
 			threads[i].join();
 		}
 		long end = System.currentTimeMillis();
@@ -109,8 +107,6 @@ public class TestConcurrentModificationsOnList {
 		for(int i=0;i<NB_THREADS;i++){
 			threads2[i] = testConcurrentModificationsOnList.new MonThreadWithSynchronizedList(synchronizedList);
 			threads2[i].start();
-		}
-		for(int i=0;i<NB_THREADS;i++){
 			threads2[i].join();
 		}
 		end = System.currentTimeMillis();
@@ -127,8 +123,6 @@ public class TestConcurrentModificationsOnList {
 		for(int i=0;i<NB_THREADS;i++){
 			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i] = testConcurrentModificationsOnList.new MonThreadWithCopyOnWriteArrayListAlreadyFullFilled(copyOnWriteArrayList);
 			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i].start();
-		}
-		for(int i=0;i<NB_THREADS;i++){
 			monThreadWithCopyOnWriteArrayListAlreadyFullFilled[i].join();
 		}
 		end = System.currentTimeMillis();
@@ -147,8 +141,6 @@ public class TestConcurrentModificationsOnList {
 		for(int i=0;i<NB_THREADS;i++){
 			monThreadWithSynchronizedListAlreadyFullFilled[i] = testConcurrentModificationsOnList.new MonThreadWithSynchronizedListAlreadyFullFilled(synchronizedList);
 			monThreadWithSynchronizedListAlreadyFullFilled[i].start();
-		}
-		for(int i=0;i<NB_THREADS;i++){
 			monThreadWithSynchronizedListAlreadyFullFilled[i].join();
 		}
 		end = System.currentTimeMillis();

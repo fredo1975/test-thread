@@ -38,6 +38,12 @@ public class Counter {
     	List<Future<Integer>> list = new ArrayList<Future<Integer>>();
         ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
         for (int i = 0; i < 500; i++) {
+        	Callable<Integer> worker = (() -> {
+        		int number = counter.increment();
+                System.out.println(number );
+                return number ;
+        	});
+        	/*
             Callable<Integer> worker = new  Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
@@ -45,8 +51,8 @@ public class Counter {
                     System.out.println(number );
                     return number ;
                 }
-            };
-            Future<Integer> submit= executor.submit(worker);
+            };*/
+            Future<Integer> submit = executor.submit(worker);
             list.add(submit);
 
         }
