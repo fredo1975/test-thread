@@ -1,7 +1,7 @@
 package fr.bluechipit.thread.exercice.printer;
 
 public class LetterPrinter extends Thread {
-    private Printer printer;
+    private final Printer printer;
 
     public LetterPrinter(Printer printer) {
         this.printer = printer;
@@ -10,6 +10,8 @@ public class LetterPrinter extends Thread {
 
     @Override
     public void run() {
-        printer.printLetters();
+        for(int i=0;i<26;i++){
+            printer.printLetters();
+        }
     }
 }
