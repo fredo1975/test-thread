@@ -4,16 +4,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-	private static final int NTHREDS = 1000000;
+	private static final int NTHREDS = 1000;
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
-		for (int i = 0; i < 1000; i++) {
-			System.out.println("i="+i+" --");
-			Long l = 100000000L;
-			Runnable worker = new MyRunnable(l + i);
+		for (int i = 0; i < NTHREDS; i++) {
+			//System.out.println("i="+i+" --");
+			Long l = 10000000L;
+			Runnable worker = new MyRunnable(l);
 			executor.execute(worker);
 		}
 		// This will make the executor accept no new threads

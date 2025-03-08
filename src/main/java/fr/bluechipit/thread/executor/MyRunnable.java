@@ -9,11 +9,11 @@ public class MyRunnable implements Runnable {
 	@Override
 	public void run() {
 		//long sum = 0;
-		System.out.println("countUntil="+countUntil+" -");
+		System.out.println("countUntil="+countUntil+" by thread"+Thread.currentThread().getName());
 		for (long i = 1; i < countUntil; i++) {
 			sum += i;
 		}
-		System.out.println("sum="+sum);
+		System.out.println("sum="+sum+" by thread"+Thread.currentThread().getName());
 	}
 	
 }
