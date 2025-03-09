@@ -34,9 +34,10 @@ public class SingletonShare {
 	 */
 	public static void main(String[] args) {
 		logger.info("start main");
-		SingletonShare inst = getInstance();
+
 		ExecutorService executor = Executors.newFixedThreadPool(NTHREDS);
 		for (long l = 0; l < NTHREDS; l++) {
+			SingletonShare inst = getInstance();
 			//logger.info("l="+l);
 			//Long l = 100000000L;
 			Runnable worker = new fr.bluechipit.thread.singleton.MyRunnable(inst, l);
